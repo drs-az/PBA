@@ -1,0 +1,492 @@
+{
+  "cards": [
+    {
+      "id": "pikachu",
+      "name": "Pikachu",
+      "type": "pokemon",
+      "energyType": "electric",
+      "hp": 60,
+      "attacks": [
+        {
+          "name": "Thunder Shock",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": "50% chance to paralyze",
+          "effectKeyword": "paralyze"
+        },
+        {
+          "name": "Electro Ball",
+          "energyRequired": 2,
+          "damage": 40,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Thunderbolt",
+          "energyRequired": 3,
+          "damage": 80,
+          "effect": "Discard 1 Electric Energy",
+          "effectKeyword": "discard_energy"
+        },
+        {
+          "name": "Spark",
+          "energyRequired": 2,
+          "damage": 20,
+          "effect": "Deal 10 damage to one of opponent's benched Pok\u00e9mon",
+          "effectKeyword": "bench_damage"
+        },
+        {
+          "name": "Quick Attack",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": "Flip a coin. If heads, this attack does 20 more damage",
+          "effectKeyword": "coin_flip_bonus"
+        }
+      ]
+    },
+    {
+      "id": "electabuzz",
+      "name": "Electabuzz",
+      "type": "pokemon",
+      "energyType": "electric",
+      "hp": 70,
+      "attacks": [
+        {
+          "name": "Low Kick",
+          "energyRequired": 1,
+          "damage": 30,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Thunder Punch",
+          "energyRequired": 2,
+          "damage": 40,
+          "effect": "Flip a coin. If heads, this attack does 20 more damage; if tails, Electabuzz does 10 damage to itself",
+          "effectKeyword": "coin_flip_damage"
+        }
+      ]
+    },
+    {
+      "id": "magnemite",
+      "name": "Magnemite",
+      "type": "pokemon",
+      "energyType": "electric",
+      "hp": 50,
+      "attacks": [
+        {
+          "name": "Tackle",
+          "energyRequired": 1,
+          "damage": 10,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Spark",
+          "energyRequired": 2,
+          "damage": 20,
+          "effect": "Deal 10 damage to one of opponent's benched Pok\u00e9mon",
+          "effectKeyword": "bench_damage"
+        }
+      ]
+    },
+    {
+      "id": "raichu",
+      "name": "Raichu",
+      "type": "pokemon",
+      "energyType": "electric",
+      "hp": 90,
+      "attacks": [
+        {
+          "name": "Electro Ball",
+          "energyRequired": 2,
+          "damage": 50,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Volt Tackle",
+          "energyRequired": 3,
+          "damage": 90,
+          "effect": "Raichu does 20 damage to itself",
+          "effectKeyword": "recoil"
+        }
+      ]
+    },
+    {
+      "id": "jolteon",
+      "name": "Jolteon",
+      "type": "pokemon",
+      "energyType": "electric",
+      "hp": 80,
+      "attacks": [
+        {
+          "name": "Quick Attack",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": "Flip a coin. If heads, this attack does 20 more damage",
+          "effectKeyword": "coin_flip_bonus"
+        },
+        {
+          "name": "Pin Missile",
+          "energyRequired": 3,
+          "damage": 40,
+          "effect": "Flip 4 coins. This attack does 40 damage for each heads",
+          "effectKeyword": "multi_coin_damage"
+        }
+      ]
+    },
+    {
+      "id": "electric_energy",
+      "name": "Electric Energy",
+      "type": "energy",
+      "energyType": "electric"
+    },
+    {
+      "id": "potion",
+      "name": "Potion",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Heal 30 HP from one of your Pok\u00e9mon",
+      "effectKeyword": "heal"
+    },
+    {
+      "id": "professor_oak",
+      "name": "Professor Oak",
+      "type": "trainer",
+      "subtype": "supporter",
+      "effect": "Draw 3 cards",
+      "effectKeyword": "draw"
+    },
+    {
+      "id": "switch",
+      "name": "Switch",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Switch your Active Pok\u00e9mon with one on your Bench",
+      "effectKeyword": "switch"
+    },
+    {
+      "id": "energy_retrieval",
+      "name": "Energy Retrieval",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Return 2 basic Energy cards from your discard pile to your hand",
+      "effectKeyword": "retrieve_energy"
+    },
+    {
+      "id": "escape_rope",
+      "name": "Escape Rope",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Each player switches their Active Pok\u00e9mon with one of their Benched Pok\u00e9mon",
+      "effectKeyword": "mutual_switch"
+    },
+    {
+      "id": "charmander",
+      "name": "Charmander",
+      "type": "pokemon",
+      "energyType": "fire",
+      "hp": 50,
+      "attacks": [
+        {
+          "name": "Scratch",
+          "energyRequired": 1,
+          "damage": 10,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Ember",
+          "energyRequired": 2,
+          "damage": 30,
+          "effect": "Discard 1 Fire Energy from Charmander",
+          "effectKeyword": "discard_energy"
+        }
+      ]
+    },
+    {
+      "id": "growlithe",
+      "name": "Growlithe",
+      "type": "pokemon",
+      "energyType": "fire",
+      "hp": 70,
+      "attacks": [
+        {
+          "name": "Bite",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Flame Tail",
+          "energyRequired": 2,
+          "damage": 40,
+          "effect": null,
+          "effectKeyword": null
+        }
+      ]
+    },
+    {
+      "id": "ponyta",
+      "name": "Ponyta",
+      "type": "pokemon",
+      "energyType": "fire",
+      "hp": 60,
+      "attacks": [
+        {
+          "name": "Stomp",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Flamethrower",
+          "energyRequired": 3,
+          "damage": 60,
+          "effect": "Discard 1 Fire Energy from Ponyta",
+          "effectKeyword": "discard_energy"
+        }
+      ]
+    },
+    {
+      "id": "charmeleon",
+      "name": "Charmeleon",
+      "type": "pokemon",
+      "energyType": "fire",
+      "hp": 80,
+      "attacks": [
+        {
+          "name": "Flame Tail",
+          "energyRequired": 2,
+          "damage": 40,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Flamethrower",
+          "energyRequired": 3,
+          "damage": 60,
+          "effect": "Discard 1 Fire Energy from Charmeleon",
+          "effectKeyword": "discard_energy"
+        }
+      ]
+    },
+    {
+      "id": "flareon",
+      "name": "Flareon",
+      "type": "pokemon",
+      "energyType": "fire",
+      "hp": 90,
+      "attacks": [
+        {
+          "name": "Quick Attack",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": "Flip a coin. If heads, this attack does 20 more damage",
+          "effectKeyword": "coin_flip_bonus"
+        },
+        {
+          "name": "Fire Spin",
+          "energyRequired": 3,
+          "damage": 80,
+          "effect": "Discard 2 Fire Energy from Flareon",
+          "effectKeyword": "discard_energy"
+        }
+      ]
+    },
+    {
+      "id": "fire_energy",
+      "name": "Fire Energy",
+      "type": "energy",
+      "energyType": "fire"
+    },
+    {
+      "id": "bill",
+      "name": "Bill",
+      "type": "trainer",
+      "subtype": "supporter",
+      "effect": "Draw 2 cards",
+      "effectKeyword": "draw"
+    },
+    {
+      "id": "energy_search",
+      "name": "Energy Search",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Search your deck for a basic Energy card and put it into your hand. Shuffle afterwards.",
+      "effectKeyword": "search_energy"
+    },
+    {
+      "id": "fire_crystal",
+      "name": "Fire Crystal",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Discard a card from your hand. If it is a Fire Energy card, search your deck for up to 3 Fire Energy cards and put them into your hand. Shuffle afterwards.",
+      "effectKeyword": "give_fire_energy"
+    },
+    {
+      "id": "burn_heal",
+      "name": "Burn Heal",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Remove the Burned condition from one of your Pok\u00e9mon.",
+      "effectKeyword": "remove_burn"
+    },
+    {
+      "id": "bulbasaur",
+      "name": "Bulbasaur",
+      "type": "pokemon",
+      "energyType": "grass",
+      "hp": 60,
+      "attacks": [
+        {
+          "name": "Vine Whip",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Leech Seed",
+          "energyRequired": 2,
+          "damage": 20,
+          "effect": "Heal 10 HP from Bulbasaur",
+          "effectKeyword": "heal"
+        }
+      ]
+    },
+    {
+      "id": "oddish",
+      "name": "Oddish",
+      "type": "pokemon",
+      "energyType": "grass",
+      "hp": 50,
+      "attacks": [
+        {
+          "name": "Absorb",
+          "energyRequired": 1,
+          "damage": 10,
+          "effect": "Heal 10 HP from Oddish",
+          "effectKeyword": "heal"
+        },
+        {
+          "name": "Sleep Powder",
+          "energyRequired": 2,
+          "damage": 20,
+          "effect": "Flip a coin. If heads, the opponent\u2019s Active Pok\u00e9mon is now Asleep",
+          "effectKeyword": "sleep"
+        }
+      ]
+    },
+    {
+      "id": "bellsprout",
+      "name": "Bellsprout",
+      "type": "pokemon",
+      "energyType": "grass",
+      "hp": 60,
+      "attacks": [
+        {
+          "name": "Vine Whip",
+          "energyRequired": 1,
+          "damage": 20,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Poison Powder",
+          "energyRequired": 2,
+          "damage": 20,
+          "effect": "Flip a coin. If heads, the opponent\u2019s Active Pok\u00e9mon is now Poisoned",
+          "effectKeyword": "poison"
+        }
+      ]
+    },
+    {
+      "id": "ivysaur",
+      "name": "Ivysaur",
+      "type": "pokemon",
+      "energyType": "grass",
+      "hp": 80,
+      "attacks": [
+        {
+          "name": "Razor Leaf",
+          "energyRequired": 2,
+          "damage": 30,
+          "effect": "Flip a coin. If heads, this attack does 10 more damage",
+          "effectKeyword": "coin_flip_bonus"
+        },
+        {
+          "name": "Solar Beam",
+          "energyRequired": 3,
+          "damage": 60,
+          "effect": "Discard 1 Grass Energy from Ivysaur",
+          "effectKeyword": "discard_energy"
+        }
+      ]
+    },
+    {
+      "id": "leafeon",
+      "name": "Leafeon",
+      "type": "pokemon",
+      "energyType": "grass",
+      "hp": 90,
+      "attacks": [
+        {
+          "name": "Leaf Blade",
+          "energyRequired": 2,
+          "damage": 40,
+          "effect": null,
+          "effectKeyword": null
+        },
+        {
+          "name": "Synthesis",
+          "energyRequired": 3,
+          "damage": 0,
+          "effect": "Heal 30 HP from Leafeon",
+          "effectKeyword": "heal"
+        }
+      ]
+    },
+    {
+      "id": "grass_energy",
+      "name": "Grass Energy",
+      "type": "energy",
+      "energyType": "grass"
+    },
+    {
+      "id": "energy_switch",
+      "name": "Energy Switch",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Move 1 basic Energy card attached to 1 of your Pok\u00e9mon to another of your Pok\u00e9mon",
+      "effectKeyword": "move_energy"
+    },
+    {
+      "id": "full_heal",
+      "name": "Full Heal",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "Remove all Special Conditions from one of your Pok\u00e9mon",
+      "effectKeyword": "remove_status"
+    },
+    {
+      "id": "professor_elm",
+      "name": "Professor Elm",
+      "type": "trainer",
+      "subtype": "supporter",
+      "effect": "Search your deck for up to 2 Basic Pok\u00e9mon, reveal them, and put them into your hand. Shuffle afterwards.",
+      "effectKeyword": "search_pokemon"
+    },
+    {
+      "id": "sleep_powder",
+      "name": "Sleep Powder",
+      "type": "trainer",
+      "subtype": "item",
+      "effect": "The opponent\u2019s Active Pok\u00e9mon is now Asleep",
+      "effectKeyword": "sleep"
+    }
+  ]
+}
