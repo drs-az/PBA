@@ -1,25 +1,30 @@
-const POKEMON = {
-  Pikachu: {
-    hp: 100,
-    moves: [
+function buildDeck(pokemonName, energyType) {
+  const moves = {
+    Pikachu: [
       { name: 'Thunderbolt', damage: 20 },
       { name: 'Quick Attack', damage: 15 }
-    ]
-  },
-  Charmander: {
-    hp: 100,
-    moves: [
+    ],
+    Charmander: [
       { name: 'Flamethrower', damage: 25 },
       { name: 'Scratch', damage: 10 }
-    ]
-  },
-  Bulbasaur: {
-    hp: 100,
-    moves: [
+    ],
+    Bulbasaur: [
       { name: 'Vine Whip', damage: 20 },
       { name: 'Tackle', damage: 15 }
     ]
-  }
+  };
+
+  return {
+    hp: 100,
+    energyType,
+    moves: moves[pokemonName]
+  };
+}
+
+const POKEMON = {
+  Pikachu: buildDeck('Pikachu', 'electric'),
+  Charmander: buildDeck('Charmander', 'fire'),
+  Bulbasaur: buildDeck('Bulbasaur', 'grass')
 };
 
 const players = [
