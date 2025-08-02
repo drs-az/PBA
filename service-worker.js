@@ -1,10 +1,16 @@
-const CACHE_NAME = 'pba-cache-v1';
+const CACHE_NAME = 'pba-cache-v2';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './script.js',
-  './manifest.json'
+  './manifest.json',
+  './data/pokemon_cardDB.json',
+  './img/icons/icon-192x192.png',
+  './img/icons/icon-512x512.png',
+  './img/pokemon/bulbasaur.png',
+  './img/pokemon/charmander.png',
+  './img/pokemon/pikachu.png'
 ];
 
 self.addEventListener('install', event => {
