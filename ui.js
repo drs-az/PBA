@@ -115,8 +115,13 @@ function renderBench(player) {
   });
   for (let i = player.bench.length; i < 5; i++) {
     const placeholder = document.createElement('button');
-    placeholder.textContent = '(empty)';
-    placeholder.disabled = true;
+    if (selectedCardIdx !== null) {
+      placeholder.textContent = 'Place here';
+      placeholder.onclick = () => playPokemonToBench(selectedCardIdx);
+    } else {
+      placeholder.textContent = '(empty)';
+      placeholder.disabled = true;
+    }
     benchDiv.appendChild(placeholder);
   }
 }
@@ -126,6 +131,8 @@ function showCardDetails(card, idx) {
   if (selectedCardIdx === idx) {
     selectedCardIdx = null;
     cardInfoDiv.innerHTML = '';
+    benchDiv.innerHTML = '';
+    renderBench(player);
     return;
   }
   selectedCardIdx = idx;
@@ -138,6 +145,8 @@ function showCardDetails(card, idx) {
     info += `<br>Energy Type: ${card.energyType}`;
   }
   cardInfoDiv.innerHTML = info;
+  benchDiv.innerHTML = '';
+  renderBench(player);
   if (card.type === 'pokemon') {
     const benchBtn = document.createElement('button');
     benchBtn.textContent = 'Play to Bench';
