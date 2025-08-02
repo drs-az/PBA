@@ -167,6 +167,9 @@ function buildDeck(player) {
     player.active = player.hand.splice(activeIdx, 1)[0];
   } else {
     const idx = player.deck.findIndex(c => c.type === 'pokemon');
+    if (idx === -1) {
+      throw new Error('No Pokémon card found in deck. Please choose a different deck.');
+    }
     player.active = player.deck.splice(idx, 1)[0];
   }
   player.active.maxHp = player.active.hp;
