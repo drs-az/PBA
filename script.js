@@ -1,91 +1,111 @@
 // Simplified text-based Pokémon Battle Academy logic
 
-// Deck definitions for each starter persona
-const DECKS = {
-  Pikachu: {
-    energyType: 'Electric',
-    pokemon: ['Pikachu', 'Electabuzz', 'Magnemite', 'Raichu', 'Jolteon'],
-    energy: 10,
-    trainers: [
-      'Potion',
-      'Potion',
-      'Professor Oak',
-      'Professor Oak',
-      'Switch',
-      'Switch',
-      'Energy Retrieval',
-      'Energy Retrieval',
-      'Escape Rope',
-      'Escape Rope'
-    ],
-    attacks: [
-      { name: 'Thunder Shock', damage: 20, cost: 1 },
-      { name: 'Electro Ball', damage: 40, cost: 2 },
-      { name: 'Thunderbolt', damage: 80, cost: 3, discard: 1 },
-      { name: 'Spark', damage: 20, cost: 2 },
-      { name: 'Quick Attack', damage: 20, cost: 1 }
-    ]
-  },
-  Charmander: {
-    energyType: 'Fire',
-    pokemon: ['Charmander', 'Growlithe', 'Ponyta', 'Charmeleon', 'Flareon'],
-    energy: 10,
-    trainers: [
-      'Potion',
-      'Potion',
-      'Bill',
-      'Bill',
-      'Energy Search',
-      'Energy Search',
-      'Fire Crystal',
-      'Fire Crystal',
-      'Burn Heal',
-      'Burn Heal'
-    ],
-    attacks: [
-      { name: 'Ember', damage: 30, cost: 1, discard: 1 },
-      { name: 'Flamethrower', damage: 60, cost: 3, discard: 1 },
-      { name: 'Scratch', damage: 10, cost: 1 },
-      { name: 'Flame Tail', damage: 40, cost: 2 },
-      { name: 'Blaze Kick', damage: 50, cost: 3 }
-    ]
-  },
-  Bulbasaur: {
-    energyType: 'Grass',
-    pokemon: ['Bulbasaur', 'Oddish', 'Bellsprout', 'Ivysaur', 'Leafeon'],
-    energy: 10,
-    trainers: [
-      'Potion',
-      'Potion',
-      'Energy Switch',
-      'Energy Switch',
-      'Sleep Powder',
-      'Sleep Powder',
-      'Full Heal',
-      'Full Heal',
-      'Professor Elm',
-      'Professor Elm'
-    ],
-    attacks: [
-      { name: 'Vine Whip', damage: 20, cost: 1 },
-      { name: 'Razor Leaf', damage: 30, cost: 2 },
-      { name: 'Sleep Powder', damage: 20, cost: 2 },
-      { name: 'Leech Seed', damage: 20, cost: 2 },
-      { name: 'Solar Beam', damage: 60, cost: 4 }
-    ]
-  }
+let cardDB = [];
+
+async function loadCardDB() {
+  const res = await fetch('data/pokemon_cardDB.json');
+  const data = await res.json();
+  cardDB = data.cards;
+}
+
+function getCardDefinition(cardId) {
+  const card = cardDB.find(c => c.id === cardId);
+  if (!card) throw new Error(`Card not found: ${cardId}`);
+  return JSON.parse(JSON.stringify(card));
+}
+
+const decksConfig = {
+  Pikachu: [
+    { id: 'pikachu', count: 1 },
+    { id: 'electabuzz', count: 1 },
+    { id: 'magnemite', count: 1 },
+    { id: 'raichu', count: 1 },
+    { id: 'jolteon', count: 1 },
+    { id: 'electric_energy', count: 10 },
+    { id: 'potion', count: 2 },
+    { id: 'professor_oak', count: 2 },
+    { id: 'switch', count: 2 },
+    { id: 'energy_retrieval', count: 2 },
+    { id: 'escape_rope', count: 2 }
+  ],
+  Charmander: [
+    { id: 'charmander', count: 1 },
+    { id: 'growlithe', count: 1 },
+    { id: 'ponyta', count: 1 },
+    { id: 'charmeleon', count: 1 },
+    { id: 'flareon', count: 1 },
+    { id: 'fire_energy', count: 10 },
+    { id: 'potion', count: 2 },
+    { id: 'bill', count: 2 },
+    { id: 'energy_search', count: 2 },
+    { id: 'fire_crystal', count: 2 },
+    { id: 'burn_heal', count: 2 }
+  ],
+  Bulbasaur: [
+    { id: 'bulbasaur', count: 1 },
+    { id: 'oddish', count: 1 },
+    { id: 'bellsprout', count: 1 },
+    { id: 'ivysaur', count: 1 },
+    { id: 'leafeon', count: 1 },
+    { id: 'grass_energy', count: 10 },
+    { id: 'energy_switch', count: 2 },
+    { id: 'full_heal', count: 2 },
+    { id: 'professor_elm', count: 2 },
+    { id: 'sleep_powder', count: 2 }
+  ]
 };
+
+function assembleDeck(persona) {
+  const config = decksConfig[persona];
+  if (!config) throw new Error(`Deck config missing for persona: ${persona}`);
+
+  let deck = [];
+  config.forEach(entry => {
+    for (let i = 0; i < entry.count; i++) {
+      deck.push(getCardDefinition(entry.id));
+    }
+  });
+
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+function drawCards(deck, n = 1) {
+  return deck.splice(0, n);
+}
+
+function attachEnergy(pokemon, energyCard) {
+  pokemon.attachedEnergy = pokemon.attachedEnergy || [];
+  pokemon.attachedEnergy.push(energyCard);
+}
+
+function canUseAttack(pokemon, attack) {
+  return (
+    (pokemon.attachedEnergy?.length || 0) >= attack.energyRequired &&
+    pokemon.hp > 0
+  );
+}
+
+function applyAttack(attacker, attack, defender) {
+  defender.hp = Math.max(defender.hp - attack.damage, 0);
+  switch (attack.effectKeyword) {
+    case 'paralyze':
+      defender.status = 'Paralyzed';
+      break;
+    case 'heal':
+      attacker.hp = Math.min(attacker.hp + 10, attacker.maxHp);
+      break;
+    case 'discard_energy':
+      attacker.attachedEnergy?.pop();
+      break;
+  }
+}
 
 function getPokemonImage(name) {
   return `img/pokemon/${name.toLowerCase()}.png`;
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
 }
 
 // Player structures
@@ -102,6 +122,7 @@ const battleSection = document.getElementById('battle');
 const pokemonChoicesDiv = document.getElementById('pokemonChoices');
 const statusP = document.getElementById('status');
 const movesDiv = document.getElementById('moves');
+const handDiv = document.getElementById('hand');
 const p1Img = document.getElementById('p1Img');
 const p2Img = document.getElementById('p2Img');
 const p1DeckSpan = document.getElementById('p1Deck');
@@ -111,7 +132,7 @@ const p2PrizesSpan = document.getElementById('p2Prizes');
 
 function showPokemonChoices() {
   pokemonChoicesDiv.innerHTML = '';
-  Object.keys(DECKS).forEach(name => {
+  Object.keys(decksConfig).forEach(name => {
     const btn = document.createElement('button');
     btn.classList.add('pokemon-choice');
     const img = document.createElement('img');
@@ -127,34 +148,24 @@ function showPokemonChoices() {
 }
 
 function buildDeck(player) {
-  const def = DECKS[player.persona];
-  let deck = [];
-  def.pokemon.forEach(name => {
-    deck.push({
-      type: 'Pokemon',
-      name,
-      hp: 100,
-      energy: 0,
-      energyType: def.energyType
-    });
-  });
-  for (let i = 0; i < def.energy; i++) {
-    deck.push({ type: 'Energy', energyType: def.energyType });
+  player.deck = assembleDeck(player.persona);
+  player.prizeCards = drawCards(player.deck, 3);
+  player.hand = drawCards(player.deck, 7);
+  const activeIdx = player.hand.findIndex(c => c.type === 'pokemon');
+  if (activeIdx >= 0) {
+    player.active = player.hand.splice(activeIdx, 1)[0];
+  } else {
+    const idx = player.deck.findIndex(c => c.type === 'pokemon');
+    player.active = player.deck.splice(idx, 1)[0];
   }
-  def.trainers.forEach(name => deck.push({ type: 'Trainer', name }));
-  def.attacks.forEach(a => deck.push({ type: 'Attack', ...a }));
-  deck = shuffle(deck);
-  const idx = deck.findIndex(c => c.type === 'Pokemon' && c.name === player.persona);
-  player.active = deck.splice(idx, 1)[0];
-  player.deck = deck;
-  player.prizeCards = player.deck.splice(0, 3);
-  player.hand = player.deck.splice(0, 5);
+  player.active.maxHp = player.active.hp;
+  player.active.attachedEnergy = [];
   player.prizesTaken = 0;
 }
 
 function choosePokemon(name) {
   players[0].persona = name;
-  const other = Object.keys(DECKS);
+  const other = Object.keys(decksConfig).filter(p => p !== name);
   players[1].persona = other[Math.floor(Math.random() * other.length)];
   buildDeck(players[0]);
   buildDeck(players[1]);
@@ -172,16 +183,10 @@ function startBattle() {
   startTurn("Game start! ");
 }
 
-function drawCards(player, n) {
-  for (let i = 0; i < n; i++) {
-    if (player.deck.length > 0) player.hand.push(player.deck.shift());
-  }
-}
-
 function startTurn(message = '') {
   const player = players[currentPlayer];
   player.turnState = { energy: false, trainer: false, attack: false };
-  drawCards(player, 1);
+  player.hand.push(...drawCards(player.deck, 1));
   updateDeckInfo();
   updateStatus(`${message}${player.name}'s turn.`);
   if (player.isAI) {
@@ -194,69 +199,83 @@ function startTurn(message = '') {
 function renderHand() {
   const player = players[currentPlayer];
   movesDiv.innerHTML = '';
-  if (!player.turnState.energy) {
-    const energyIdx = player.hand.findIndex(c => c.type === 'Energy');
-    if (energyIdx >= 0) {
-      const btn = document.createElement('button');
-      btn.textContent = `Attach Energy`;
-      btn.onclick = () => playEnergy(energyIdx);
-      movesDiv.appendChild(btn);
+  handDiv.innerHTML = '';
+
+  player.hand.forEach((card, idx) => {
+    const btn = document.createElement('button');
+    btn.textContent = card.name;
+    btn.onclick = () => showCardDetails(card);
+    handDiv.appendChild(btn);
+
+    if (!player.turnState.energy && card.type === 'energy') {
+      const eBtn = document.createElement('button');
+      eBtn.textContent = `Attach ${card.name}`;
+      eBtn.onclick = () => playEnergy(idx);
+      movesDiv.appendChild(eBtn);
     }
-  }
-  if (!player.turnState.trainer) {
-    player.hand.forEach((card, idx) => {
-      if (card.type === 'Trainer') {
-        const btn = document.createElement('button');
-        btn.textContent = `Play ${card.name}`;
-        btn.onclick = () => playTrainer(idx);
-        movesDiv.appendChild(btn);
+    if (!player.turnState.trainer && card.type === 'trainer') {
+      const tBtn = document.createElement('button');
+      tBtn.textContent = `Play ${card.name}`;
+      tBtn.onclick = () => playTrainer(idx);
+      movesDiv.appendChild(tBtn);
+    }
+  });
+
+  if (!player.turnState.attack && player.active) {
+    player.active.attacks.forEach((attack, idx) => {
+      if (canUseAttack(player.active, attack)) {
+        const aBtn = document.createElement('button');
+        aBtn.textContent = `${attack.name} (${attack.damage})`;
+        aBtn.onclick = () => playAttack(idx);
+        movesDiv.appendChild(aBtn);
       }
     });
   }
-  if (!player.turnState.attack) {
-    player.hand.forEach((card, idx) => {
-      if (card.type === 'Attack' && player.active.energy >= card.cost) {
-        const btn = document.createElement('button');
-        btn.textContent = `${card.name} (${card.damage})`;
-        btn.onclick = () => playAttack(idx);
-        movesDiv.appendChild(btn);
-      }
-    });
-  }
+
   const endBtn = document.createElement('button');
   endBtn.textContent = 'End Turn';
   endBtn.onclick = endTurn;
   movesDiv.appendChild(endBtn);
 }
 
+function showCardDetails(card) {
+  let info = `${card.name} (${card.type})`;
+  if (card.type === 'pokemon') {
+    info += `\nHP: ${card.hp}\nAttacks: ${card.attacks.map(a => `${a.name} (${a.damage})`).join(', ')}`;
+  } else if (card.type === 'trainer') {
+    info += `\nEffect: ${card.effect}`;
+  } else if (card.type === 'energy') {
+    info += `\nEnergy Type: ${card.energyType}`;
+  }
+  alert(info);
+}
+
 function playEnergy(idx) {
   const player = players[currentPlayer];
   if (player.turnState.energy) return;
-  player.hand.splice(idx, 1);
-  player.active.energy += 1;
+  const energyCard = player.hand.splice(idx, 1)[0];
+  attachEnergy(player.active, energyCard);
   player.turnState.energy = true;
-  updateStatus(`${player.name} attached an energy.`);
+  updateStatus(`${player.name} attached ${energyCard.name}.`);
   renderHand();
 }
 
 function applyTrainer(player, card) {
-  switch (card.name) {
-    case 'Potion':
-    case 'Burn Heal':
-    case 'Full Heal':
-      player.active.hp = Math.min(100, player.active.hp + 30);
-      updateStatus(`${player.name} healed 30 HP.`);
+  switch (card.effectKeyword) {
+    case 'heal': {
+      const amount = parseInt(card.effect.match(/\d+/)) || 10;
+      player.active.hp = Math.min(player.active.maxHp, player.active.hp + amount);
+      updateStatus(`${player.name} healed ${amount} HP.`);
       break;
-    case 'Professor Oak':
-      drawCards(player, 3);
-      updateStatus(`${player.name} drew 3 cards.`);
+    }
+    case 'draw': {
+      const amount = parseInt(card.effect.match(/\d+/)) || 1;
+      player.hand.push(...drawCards(player.deck, amount));
+      updateStatus(`${player.name} drew ${amount} cards.`);
       break;
-    case 'Bill':
-      drawCards(player, 2);
-      updateStatus(`${player.name} drew 2 cards.`);
-      break;
+    }
     default:
-      drawCards(player, 1);
+      player.hand.push(...drawCards(player.deck, 1));
       updateStatus(`${player.name} drew a card.`);
       break;
   }
@@ -275,17 +294,14 @@ function playAttack(idx) {
   const attacker = players[currentPlayer];
   const defender = players[defendingPlayer];
   if (attacker.turnState.attack) return;
-  const card = attacker.hand.splice(idx, 1)[0];
-  if (attacker.active.energy < card.cost) {
-    attacker.hand.splice(idx, 0, card);
+  const attack = attacker.active.attacks[idx];
+  if (!canUseAttack(attacker.active, attack)) {
     updateStatus('Not enough energy.');
     return;
   }
-  defender.active.hp -= card.damage;
-  if (defender.active.hp < 0) defender.active.hp = 0;
-  if (card.discard) attacker.active.energy = Math.max(0, attacker.active.energy - card.discard);
+  applyAttack(attacker.active, attack, defender.active);
   attacker.turnState.attack = true;
-  let message = `${attacker.name}'s ${attacker.active.name} used ${card.name} for ${card.damage} damage! `;
+  let message = `${attacker.name}'s ${attacker.active.name} used ${attack.name} for ${attack.damage} damage! `;
   if (defender.active.hp === 0) {
     handleKnockout(attacker, defender, message);
   } else {
@@ -322,17 +338,20 @@ function handleKnockout(attacker, defender, message) {
 }
 
 function promotePokemon(player) {
-  let idx = player.hand.findIndex(c => c.type === 'Pokemon');
+  let idx = player.hand.findIndex(c => c.type === 'pokemon');
   if (idx >= 0) {
     player.active = player.hand.splice(idx, 1)[0];
-    return true;
+  } else {
+    idx = player.deck.findIndex(c => c.type === 'pokemon');
+    if (idx >= 0) {
+      player.active = player.deck.splice(idx, 1)[0];
+    } else {
+      return false;
+    }
   }
-  idx = player.deck.findIndex(c => c.type === 'Pokemon');
-  if (idx >= 0) {
-    player.active = player.deck.splice(idx, 1)[0];
-    return true;
-  }
-  return false;
+  player.active.maxHp = player.active.hp;
+  player.active.attachedEnergy = [];
+  return true;
 }
 
 function endTurn() {
@@ -354,25 +373,16 @@ function updateDeckInfo() {
 function aiTurn() {
   const player = players[currentPlayer];
   if (!player.turnState.energy) {
-    const idx = player.hand.findIndex(c => c.type === 'Energy');
+    const idx = player.hand.findIndex(c => c.type === 'energy');
     if (idx >= 0) playEnergy(idx);
   }
-  if (!player.turnState.trainer && player.active.hp < 50) {
+  if (!player.turnState.trainer && player.active.hp < player.active.maxHp) {
     const idx = player.hand.findIndex(
-      c => c.type === 'Trainer' && c.name === 'Potion'
+      c => c.type === 'trainer' && c.effectKeyword === 'heal'
     );
     if (idx >= 0) playTrainer(idx);
   }
-  if (
-    !player.turnState.trainer &&
-    player.hand.length < 2
-  ) {
-    const idx = player.hand.findIndex(c => c.type === 'Trainer');
-    if (idx >= 0) playTrainer(idx);
-  }
-  const atkIdx = player.hand.findIndex(
-    c => c.type === 'Attack' && player.active.energy >= c.cost
-  );
+  const atkIdx = player.active.attacks.findIndex(a => canUseAttack(player.active, a));
   if (atkIdx >= 0) {
     playAttack(atkIdx);
   } else {
@@ -380,7 +390,7 @@ function aiTurn() {
   }
 }
 
-showPokemonChoices();
+loadCardDB().then(showPokemonChoices);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
