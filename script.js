@@ -261,9 +261,7 @@ function showCardDetails(card, idx) {
   selectedCardIdx = idx;
   let info = `<strong>${card.name}</strong> (${card.type})`;
   if (card.type === 'pokemon') {
-    info += `<br>HP: ${card.hp}<br>Attacks: ${card.attacks`
-      .map(a => `${a.name} (${a.damage})`)
-      .join(', ')}`;
+    info += `<br>HP: ${card.hp}<br>Attacks: ${card.attacks.map(a => `${a.name} (${a.damage})`).join(', ')}`;
   } else if (card.type === 'trainer') {
     info += `<br>Effect: ${card.effect}`;
   } else if (card.type === 'energy') {
