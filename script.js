@@ -459,7 +459,13 @@ function provideHint() {
   updateStatus('Hint: End your turn.');
 }
 
-loadCardDB().then(showPokemonChoices);
+loadCardDB()
+  .then(showPokemonChoices)
+  .catch(err => {
+    console.error('Failed to load card DB', err);
+    updateStatus('Failed to load card database. Check console for details.');
+    showPokemonChoices();
+  });
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
