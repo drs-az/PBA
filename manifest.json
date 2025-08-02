@@ -1,0 +1,9 @@
+{
+  "name": "Pokémon Battle Academy",
+  "short_name": "PBA",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Two player turn-based Pokémon battle game",
+  "icons": []
+}
