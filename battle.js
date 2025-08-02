@@ -73,6 +73,7 @@ function buildDeck(player) {
   player.deck = assembleDeck(player.persona);
   player.prizeCards = drawCards(player.deck, 3);
   player.hand = drawCards(player.deck, 7);
+  player.bench = [];
   const activeIdx = player.hand.findIndex(c => c.type === 'pokemon');
   if (activeIdx >= 0) {
     player.active = player.hand.splice(activeIdx, 1)[0];
@@ -144,6 +145,30 @@ export function playEnergy(idx) {
   renderHand();
 }
 
+export function playPokemonToBench(idx) {
+  const player = players[currentPlayer];
+  const card = player.hand[idx];
+  if (!card || card.type !== 'pokemon' || player.bench.length >= 5) return;
+  const pokemon = player.hand.splice(idx, 1)[0];
+  pokemon.maxHp = pokemon.hp;
+  pokemon.attachedEnergy = [];
+  player.bench.push(pokemon);
+  updateStatus(`${player.name} benched ${pokemon.name}.`);
+  renderHand();
+}
+
+export function retreatPokemon(benchIdx, playerIdx = currentPlayer) {
+  const player = players[playerIdx];
+  if (!player.bench || !player.bench[benchIdx]) return false;
+  const newActive = player.bench.splice(benchIdx, 1)[0];
+  const oldActive = player.active;
+  player.active = newActive;
+  player.bench.push(oldActive);
+  updateActiveInfo();
+  if (playerIdx === currentPlayer) renderHand();
+  return true;
+}
+
 function applyTrainer(player, card) {
   switch (card.effectKeyword) {
     case 'heal': {
@@ -156,6 +181,29 @@ function applyTrainer(player, card) {
       const amount = parseInt(card.effect.match(/\d+/)) || 1;
       player.hand.push(...drawCards(player.deck, amount));
       updateStatus(`${player.name} drew ${amount} cards.`);
+      break;
+    }
+    case 'switch': {
+      if (player.bench.length > 0) {
+        retreatPokemon(0, currentPlayer);
+        updateStatus(`${player.name} switched their Active Pokémon.`);
+      } else {
+        updateStatus(`${player.name} has no benched Pokémon to switch.`);
+      }
+      break;
+    }
+    case 'mutual_switch': {
+      const msgs = [];
+      if (players[currentPlayer].bench.length > 0) {
+        retreatPokemon(0, currentPlayer);
+        msgs.push(`${players[currentPlayer].name} switched.`);
+      }
+      if (players[defendingPlayer].bench.length > 0) {
+        retreatPokemon(0, defendingPlayer);
+        msgs.push(`${players[defendingPlayer].name} switched.`);
+      }
+      if (msgs.length === 0) msgs.push('No switches occurred.');
+      updateStatus(msgs.join(' '));
       break;
     }
     default:
@@ -218,6 +266,10 @@ export function handleKnockout(attacker, defender, message) {
 }
 
 export function promotePokemon(player) {
+  if (player.bench && player.bench.length > 0) {
+    player.active = player.bench.shift();
+    return true;
+  }
   let idx = player.hand.findIndex(c => c.type === 'pokemon');
   if (idx >= 0) {
     player.active = player.hand.splice(idx, 1)[0];

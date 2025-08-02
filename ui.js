@@ -5,6 +5,8 @@ import {
   canUseAttack,
   playAttack,
   playCard,
+  playPokemonToBench,
+  retreatPokemon,
   endTurn,
   choosePokemon,
   provideHint
@@ -16,6 +18,7 @@ const pokemonChoicesDiv = document.getElementById('pokemonChoices');
 const statusP = document.getElementById('status');
 const movesDiv = document.getElementById('moves');
 const handDiv = document.getElementById('hand');
+const benchDiv = document.getElementById('bench');
 const p1Img = document.getElementById('p1Img');
 const p2Img = document.getElementById('p2Img');
 const p1DeckSpan = document.getElementById('p1Deck');
@@ -57,8 +60,11 @@ export function renderHand() {
   const player = players[currentPlayer];
   movesDiv.innerHTML = '';
   handDiv.innerHTML = '';
+  benchDiv.innerHTML = '';
   cardInfoDiv.innerHTML = '';
   selectedCardIdx = null;
+
+  renderBench(player);
 
   const groups = player.hand.reduce((acc, card, idx) => {
     (acc[card.type] = acc[card.type] || []).push({ card, idx });
@@ -94,6 +100,27 @@ export function renderHand() {
   movesDiv.appendChild(endBtn);
 }
 
+function renderBench(player) {
+  const heading = document.createElement('h3');
+  heading.textContent = 'Bench';
+  benchDiv.appendChild(heading);
+  player.bench.forEach((poke, idx) => {
+    const btn = document.createElement('button');
+    btn.textContent = `${poke.name} (${poke.hp} HP)`;
+    btn.onclick = () => {
+      retreatPokemon(idx);
+      updateStatus(`${players[currentPlayer].name} retreated to ${players[currentPlayer].active.name}.`);
+    };
+    benchDiv.appendChild(btn);
+  });
+  for (let i = player.bench.length; i < 5; i++) {
+    const placeholder = document.createElement('button');
+    placeholder.textContent = '(empty)';
+    placeholder.disabled = true;
+    benchDiv.appendChild(placeholder);
+  }
+}
+
 function showCardDetails(card, idx) {
   const player = players[currentPlayer];
   if (selectedCardIdx === idx) {
@@ -111,14 +138,22 @@ function showCardDetails(card, idx) {
     info += `<br>Energy Type: ${card.energyType}`;
   }
   cardInfoDiv.innerHTML = info;
-  const playBtn = document.createElement('button');
-  playBtn.textContent = 'Play Card';
-  playBtn.onclick = () => playCard(idx);
-  if (card.type === 'energy' && player.turnState.energy) playBtn.disabled = true;
-  if (card.type === 'trainer' && player.turnState.trainer) playBtn.disabled = true;
-  if (card.type === 'pokemon') playBtn.disabled = true;
-  cardInfoDiv.appendChild(document.createElement('br'));
-  cardInfoDiv.appendChild(playBtn);
+  if (card.type === 'pokemon') {
+    const benchBtn = document.createElement('button');
+    benchBtn.textContent = 'Play to Bench';
+    benchBtn.onclick = () => playPokemonToBench(idx);
+    if (player.bench.length >= 5) benchBtn.disabled = true;
+    cardInfoDiv.appendChild(document.createElement('br'));
+    cardInfoDiv.appendChild(benchBtn);
+  } else {
+    const playBtn = document.createElement('button');
+    playBtn.textContent = 'Play Card';
+    playBtn.onclick = () => playCard(idx);
+    if (card.type === 'energy' && player.turnState.energy) playBtn.disabled = true;
+    if (card.type === 'trainer' && player.turnState.trainer) playBtn.disabled = true;
+    cardInfoDiv.appendChild(document.createElement('br'));
+    cardInfoDiv.appendChild(playBtn);
+  }
 }
 
 export function showPokemonChoices() {
