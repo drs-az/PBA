@@ -1,1 +1,24 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokémon Battle Academy</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="game">
+    <h1>Pokémon Battle Academy</h1>
+    <section id="setup">
+      <p>Player <span id="currentPlayer">1</span>, choose your Pokémon:</p>
+      <div id="pokemonChoices"></div>
+    </section>
+    <section id="battle" class="hidden">
+      <p id="status"></p>
+      <div id="moves"></div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
