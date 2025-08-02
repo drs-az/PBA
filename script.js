@@ -68,8 +68,7 @@ function startBattle() {
   defendingPlayer = 1;
   setupSection.classList.add('hidden');
   battleSection.classList.remove('hidden');
-  updateStatus(`${players[currentPlayer].name}'s turn.`);
-  renderMoves();
+  startTurn();
 }
 
 function renderMoves() {
@@ -83,6 +82,20 @@ function renderMoves() {
   });
 }
 
+function startTurn(message = '') {
+  const player = players[currentPlayer];
+  const opponent = players[defendingPlayer];
+
+  if (player.deck && player.deck.length === 0) {
+    movesDiv.innerHTML = '';
+    updateStatus(`${message}${opponent.name} wins! ${player.name} has no cards left.`);
+    return;
+  }
+
+  updateStatus(`${message}${player.name}'s turn.`);
+  renderMoves();
+}
+
 function performMove(move) {
   const attacker = players[currentPlayer];
   const defender = players[defendingPlayer];
@@ -92,12 +105,12 @@ function performMove(move) {
   if (defender.pokemon.hp === 0) {
     message += `${defender.name}'s ${defender.pokemonName} fainted. ${attacker.name} wins!`;
     movesDiv.innerHTML = '';
+    updateStatus(message);
   } else {
-    message += `${defender.name}'s ${defender.pokemonName} has ${defender.pokemon.hp} HP left.<br>Pass the device to ${players[defendingPlayer].name}.`;
+    message += `${defender.name}'s ${defender.pokemonName} has ${defender.pokemon.hp} HP left.<br>`;
     [currentPlayer, defendingPlayer] = [defendingPlayer, currentPlayer];
-    renderMoves();
+    startTurn(message);
   }
-  updateStatus(message);
 }
 
 function updateStatus(text) {
