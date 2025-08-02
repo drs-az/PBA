@@ -101,6 +101,30 @@ function applyAttack(attacker, attack, defender) {
     case 'discard_energy':
       attacker.attachedEnergy?.pop();
       break;
+    case 'bench_damage':
+      if (defender.bench && defender.bench.length > 0) {
+        const target = defender.bench[0];
+        target.hp = Math.max(target.hp - 10, 0);
+        console.log(`Bench damage dealt to ${target.name}`);
+      } else {
+        console.log('Bench damage effect: defender has no benched Pokémon.');
+      }
+      break;
+    case 'coin_flip_bonus':
+      const match = attack.effect?.match(/(\d+)\s+more damage/);
+      const bonus = match ? parseInt(match[1], 10) : 20;
+      if (Math.random() < 0.5) {
+        defender.hp = Math.max(defender.hp - bonus, 0);
+        console.log(`Coin flip success! Bonus ${bonus} damage.`);
+      } else {
+        console.log('Coin flip failed. No bonus damage.');
+      }
+      break;
+    default:
+      if (attack.effectKeyword) {
+        console.warn(`Unknown effect keyword: ${attack.effectKeyword}`);
+      }
+      break;
   }
 }
 
