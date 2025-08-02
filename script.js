@@ -88,12 +88,12 @@ function performMove(move) {
   const defender = players[defendingPlayer];
   defender.pokemon.hp -= move.damage;
   if (defender.pokemon.hp < 0) defender.pokemon.hp = 0;
-  let message = `${attacker.name}'s ${attacker.pokemonName} used ${move.name}!\n`;
+  let message = `${attacker.name}'s ${attacker.pokemonName} used ${move.name}!<br>`;
   if (defender.pokemon.hp === 0) {
     message += `${defender.name}'s ${defender.pokemonName} fainted. ${attacker.name} wins!`;
     movesDiv.innerHTML = '';
   } else {
-    message += `${defender.name}'s ${defender.pokemonName} has ${defender.pokemon.hp} HP left.\nPass the device to ${players[defendingPlayer].name}.`;
+    message += `${defender.name}'s ${defender.pokemonName} has ${defender.pokemon.hp} HP left.<br>Pass the device to ${players[defendingPlayer].name}.`;
     [currentPlayer, defendingPlayer] = [defendingPlayer, currentPlayer];
     renderMoves();
   }
@@ -101,7 +101,7 @@ function performMove(move) {
 }
 
 function updateStatus(text) {
-  statusP.textContent = text;
+  statusP.innerHTML = text;
 }
 
 showPokemonChoices();
