@@ -137,6 +137,8 @@ const cardInfoDiv = document.getElementById('cardInfo');
 const hintBtn = document.getElementById('hintBtn');
 hintBtn.addEventListener('click', provideHint);
 
+let selectedCardIdx = null;
+
 function showPokemonChoices() {
   pokemonChoicesDiv.innerHTML = '';
   const chosen = players.map(p => p.persona).filter(Boolean);
@@ -213,25 +215,23 @@ function renderHand() {
   movesDiv.innerHTML = '';
   handDiv.innerHTML = '';
   cardInfoDiv.innerHTML = '';
+  selectedCardIdx = null;
 
-  player.hand.forEach((card, idx) => {
-    const btn = document.createElement('button');
-    btn.textContent = card.name;
-    btn.onclick = () => showCardDetails(card);
-    handDiv.appendChild(btn);
+  const groups = player.hand.reduce((acc, card, idx) => {
+    (acc[card.type] = acc[card.type] || []).push({ card, idx });
+    return acc;
+  }, {});
 
-    if (!player.turnState.energy && card.type === 'energy') {
-      const eBtn = document.createElement('button');
-      eBtn.textContent = `Attach ${card.name}`;
-      eBtn.onclick = () => playEnergy(idx);
-      movesDiv.appendChild(eBtn);
-    }
-    if (!player.turnState.trainer && card.type === 'trainer') {
-      const tBtn = document.createElement('button');
-      tBtn.textContent = `Play ${card.name}`;
-      tBtn.onclick = () => playTrainer(idx);
-      movesDiv.appendChild(tBtn);
-    }
+  Object.keys(groups).forEach(type => {
+    const heading = document.createElement('h3');
+    heading.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+    handDiv.appendChild(heading);
+    groups[type].forEach(({ card, idx }) => {
+      const btn = document.createElement('button');
+      btn.textContent = card.name;
+      btn.onclick = () => showCardDetails(card, idx);
+      handDiv.appendChild(btn);
+    });
   });
 
   if (!player.turnState.attack && player.active) {
@@ -251,10 +251,17 @@ function renderHand() {
   movesDiv.appendChild(endBtn);
 }
 
-function showCardDetails(card) {
+function showCardDetails(card, idx) {
+  const player = players[currentPlayer];
+  if (selectedCardIdx === idx) {
+    selectedCardIdx = null;
+    cardInfoDiv.innerHTML = '';
+    return;
+  }
+  selectedCardIdx = idx;
   let info = `<strong>${card.name}</strong> (${card.type})`;
   if (card.type === 'pokemon') {
-    info += `<br>HP: ${card.hp}<br>Attacks: ${card.attacks
+    info += `<br>HP: ${card.hp}<br>Attacks: ${card.attacks`
       .map(a => `${a.name} (${a.damage})`)
       .join(', ')}`;
   } else if (card.type === 'trainer') {
@@ -263,6 +270,24 @@ function showCardDetails(card) {
     info += `<br>Energy Type: ${card.energyType}`;
   }
   cardInfoDiv.innerHTML = info;
+  const playBtn = document.createElement('button');
+  playBtn.textContent = 'Play Card';
+  playBtn.onclick = () => playCard(idx);
+  if (card.type === 'energy' && player.turnState.energy) playBtn.disabled = true;
+  if (card.type === 'trainer' && player.turnState.trainer) playBtn.disabled = true;
+  if (card.type === 'pokemon') playBtn.disabled = true;
+  cardInfoDiv.appendChild(document.createElement('br'));
+  cardInfoDiv.appendChild(playBtn);
+}
+
+function playCard(idx) {
+  const card = players[currentPlayer].hand[idx];
+  if (!card) return;
+  if (card.type === 'energy') {
+    playEnergy(idx);
+  } else if (card.type === 'trainer') {
+    playTrainer(idx);
+  }
 }
 
 function playEnergy(idx) {
