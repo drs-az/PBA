@@ -50,3 +50,14 @@ button {
 #deckInfo {
   margin-bottom: 1em;
 }
+
+.player-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#cardInfo {
+  min-height: 2em;
+  margin-bottom: 1em;
+}
