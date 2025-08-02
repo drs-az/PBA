@@ -111,11 +111,12 @@ function getPokemonImage(name) {
 // Player structures
 const players = [
   { name: 'Player 1', isAI: false },
-  { name: 'Player 2', isAI: true }
+  { name: 'Player 2', isAI: false }
 ];
 
 let currentPlayer = 0;
 let defendingPlayer = 1;
+let choosingPlayer = 0;
 
 const setupSection = document.getElementById('setup');
 const battleSection = document.getElementById('battle');
@@ -129,10 +130,18 @@ const p1DeckSpan = document.getElementById('p1Deck');
 const p2DeckSpan = document.getElementById('p2Deck');
 const p1PrizesSpan = document.getElementById('p1Prizes');
 const p2PrizesSpan = document.getElementById('p2Prizes');
+const currentPlayerSpan = document.getElementById('currentPlayer');
+const p1ActiveName = document.getElementById('p1ActiveName');
+const p2ActiveName = document.getElementById('p2ActiveName');
+const cardInfoDiv = document.getElementById('cardInfo');
+const hintBtn = document.getElementById('hintBtn');
+hintBtn.addEventListener('click', provideHint);
 
 function showPokemonChoices() {
   pokemonChoicesDiv.innerHTML = '';
+  const chosen = players.map(p => p.persona).filter(Boolean);
   Object.keys(decksConfig).forEach(name => {
+    if (chosen.includes(name)) return;
     const btn = document.createElement('button');
     btn.classList.add('pokemon-choice');
     const img = document.createElement('img');
@@ -164,19 +173,22 @@ function buildDeck(player) {
 }
 
 function choosePokemon(name) {
-  players[0].persona = name;
-  const other = Object.keys(decksConfig).filter(p => p !== name);
-  players[1].persona = other[Math.floor(Math.random() * other.length)];
-  buildDeck(players[0]);
-  buildDeck(players[1]);
-  startBattle();
+  players[choosingPlayer].persona = name;
+  choosingPlayer++;
+  if (choosingPlayer < players.length) {
+    currentPlayerSpan.textContent = choosingPlayer + 1;
+    showPokemonChoices();
+  } else {
+    buildDeck(players[0]);
+    buildDeck(players[1]);
+    startBattle();
+  }
 }
 
 function startBattle() {
   currentPlayer = 0;
   defendingPlayer = 1;
-  p1Img.src = getPokemonImage(players[0].active.name);
-  p2Img.src = getPokemonImage(players[1].active.name);
+  updateActiveInfo();
   updateDeckInfo();
   setupSection.classList.add('hidden');
   battleSection.classList.remove('hidden');
@@ -200,6 +212,7 @@ function renderHand() {
   const player = players[currentPlayer];
   movesDiv.innerHTML = '';
   handDiv.innerHTML = '';
+  cardInfoDiv.innerHTML = '';
 
   player.hand.forEach((card, idx) => {
     const btn = document.createElement('button');
@@ -239,15 +252,17 @@ function renderHand() {
 }
 
 function showCardDetails(card) {
-  let info = `${card.name} (${card.type})`;
+  let info = `<strong>${card.name}</strong> (${card.type})`;
   if (card.type === 'pokemon') {
-    info += `\nHP: ${card.hp}\nAttacks: ${card.attacks.map(a => `${a.name} (${a.damage})`).join(', ')}`;
+    info += `<br>HP: ${card.hp}<br>Attacks: ${card.attacks
+      .map(a => `${a.name} (${a.damage})`)
+      .join(', ')}`;
   } else if (card.type === 'trainer') {
-    info += `\nEffect: ${card.effect}`;
+    info += `<br>Effect: ${card.effect}`;
   } else if (card.type === 'energy') {
-    info += `\nEnergy Type: ${card.energyType}`;
+    info += `<br>Energy Type: ${card.energyType}`;
   }
-  alert(info);
+  cardInfoDiv.innerHTML = info;
 }
 
 function playEnergy(idx) {
@@ -279,6 +294,7 @@ function applyTrainer(player, card) {
       updateStatus(`${player.name} drew a card.`);
       break;
   }
+  updateActiveInfo();
 }
 
 function playTrainer(idx) {
@@ -300,6 +316,7 @@ function playAttack(idx) {
     return;
   }
   applyAttack(attacker.active, attack, defender.active);
+  updateActiveInfo();
   attacker.turnState.attack = true;
   let message = `${attacker.name}'s ${attacker.active.name} used ${attack.name} for ${attack.damage} damage! `;
   if (defender.active.hp === 0) {
@@ -329,11 +346,7 @@ function handleKnockout(attacker, defender, message) {
     return;
   }
   updateStatus(message + `${defender.name} promotes ${defender.active.name}.`);
-  if (defender === players[0]) {
-    p1Img.src = getPokemonImage(defender.active.name);
-  } else {
-    p2Img.src = getPokemonImage(defender.active.name);
-  }
+  updateActiveInfo();
   endTurn();
 }
 
@@ -370,6 +383,13 @@ function updateDeckInfo() {
   p2PrizesSpan.textContent = `Prizes: ${players[1].prizeCards.length}`;
 }
 
+function updateActiveInfo() {
+  p1Img.src = getPokemonImage(players[0].active.name);
+  p2Img.src = getPokemonImage(players[1].active.name);
+  p1ActiveName.textContent = `${players[0].active.name} (${players[0].active.hp} HP)`;
+  p2ActiveName.textContent = `${players[1].active.name} (${players[1].active.hp} HP)`;
+}
+
 function aiTurn() {
   const player = players[currentPlayer];
   if (!player.turnState.energy) {
@@ -388,6 +408,30 @@ function aiTurn() {
   } else {
     endTurn();
   }
+}
+
+function provideHint() {
+  const player = players[currentPlayer];
+  if (!player.turnState.energy) {
+    const idx = player.hand.findIndex(c => c.type === 'energy');
+    if (idx >= 0) {
+      updateStatus(`Hint: Attach ${player.hand[idx].name}.`);
+      return;
+    }
+  }
+  if (!player.turnState.trainer) {
+    const idx = player.hand.findIndex(c => c.type === 'trainer');
+    if (idx >= 0) {
+      updateStatus(`Hint: Play ${player.hand[idx].name}.`);
+      return;
+    }
+  }
+  const atkIdx = player.active.attacks.findIndex(a => canUseAttack(player.active, a));
+  if (atkIdx >= 0) {
+    updateStatus(`Hint: Use ${player.active.attacks[atkIdx].name}.`);
+    return;
+  }
+  updateStatus('Hint: End your turn.');
 }
 
 loadCardDB().then(showPokemonChoices);

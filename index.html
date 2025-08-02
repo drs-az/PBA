@@ -16,8 +16,14 @@
     </section>
     <section id="battle" class="hidden">
       <div id="arena">
-        <img id="p1Img" class="pokemon-img" alt="Player 1 Pokémon">
-        <img id="p2Img" class="pokemon-img" alt="Player 2 Pokémon">
+        <div class="player-area">
+          <img id="p1Img" class="pokemon-img" alt="Player 1 Pokémon">
+          <div id="p1ActiveName"></div>
+        </div>
+        <div class="player-area">
+          <img id="p2Img" class="pokemon-img" alt="Player 2 Pokémon">
+          <div id="p2ActiveName"></div>
+        </div>
       </div>
       <div id="deckInfo">
         <span id="p1Deck"></span>
@@ -25,9 +31,11 @@
         <span id="p2Deck"></span>
         <span id="p2Prizes"></span>
       </div>
+      <div id="cardInfo"></div>
       <p id="status"></p>
       <div id="hand"></div>
       <div id="moves"></div>
+      <button id="hintBtn">Hint</button>
     </section>
   </main>
   <script src="script.js"></script>
