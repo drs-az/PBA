@@ -50,8 +50,8 @@ export function updateDeckInfo() {
 }
 
 export function updateActiveInfo() {
-  p1Img.src = getPokemonImage(players[0].active.name);
-  p2Img.src = getPokemonImage(players[1].active.name);
+  p1Img.src = getPokemonImage(players[0].persona);
+  p2Img.src = getPokemonImage(players[1].persona);
   p1ActiveName.textContent = `${players[0].active.name} (${players[0].active.hp} HP)`;
   p2ActiveName.textContent = `${players[1].active.name} (${players[1].active.hp} HP)`;
 }
