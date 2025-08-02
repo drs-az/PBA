@@ -1,7 +1,7 @@
 body {
   font-family: sans-serif;
   text-align: center;
-  background: #f0f0f0;
+  background: linear-gradient(45deg, #f5f7fa, #c3cfe2);
   margin: 0;
 }
 
@@ -21,4 +21,32 @@ button {
   margin: 0.25em;
   padding: 0.5em 1em;
   font-size: 1em;
+}
+
+.pokemon-choice {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.pokemon-choice img {
+  width: 100px;
+  height: auto;
+  display: block;
+}
+
+#arena {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.pokemon-img {
+  width: 120px;
+  height: auto;
+}
+
+#deckInfo {
+  margin-bottom: 1em;
 }

@@ -1,4 +1,4 @@
-function buildDeck(pokemonName, energyType) {
+function buildPokemon(pokemonName, energyType) {
   const moves = {
     Pikachu: [
       { name: 'Thunderbolt', damage: 20 },
@@ -22,14 +22,22 @@ function buildDeck(pokemonName, energyType) {
 }
 
 const POKEMON = {
-  Pikachu: buildDeck('Pikachu', 'electric'),
-  Charmander: buildDeck('Charmander', 'fire'),
-  Bulbasaur: buildDeck('Bulbasaur', 'grass')
+  Pikachu: buildPokemon('Pikachu', 'electric'),
+  Charmander: buildPokemon('Charmander', 'fire'),
+  Bulbasaur: buildPokemon('Bulbasaur', 'grass')
 };
 
+function getPokemonImage(name) {
+  return `img/pokemon/${name.toLowerCase()}.png`;
+}
+
+function generateDeck(size = 10) {
+  return Array.from({ length: size }, (_, i) => i + 1);
+}
+
 const players = [
-  { name: 'Player 1', pokemon: null, pokemonName: null },
-  { name: 'Player 2', pokemon: null, pokemonName: null }
+  { name: 'Player 1', pokemon: null, pokemonName: null, deck: [] },
+  { name: 'Player 2', pokemon: null, pokemonName: null, deck: [] }
 ];
 
 let currentPlayer = 0;
@@ -41,12 +49,23 @@ const currentPlayerSpan = document.getElementById('currentPlayer');
 const pokemonChoicesDiv = document.getElementById('pokemonChoices');
 const statusP = document.getElementById('status');
 const movesDiv = document.getElementById('moves');
+const p1Img = document.getElementById('p1Img');
+const p2Img = document.getElementById('p2Img');
+const p1DeckSpan = document.getElementById('p1Deck');
+const p2DeckSpan = document.getElementById('p2Deck');
 
 function showPokemonChoices() {
   pokemonChoicesDiv.innerHTML = '';
   Object.keys(POKEMON).forEach(name => {
     const btn = document.createElement('button');
-    btn.textContent = name;
+    btn.classList.add('pokemon-choice');
+    const img = document.createElement('img');
+    img.src = getPokemonImage(name);
+    img.alt = name;
+    btn.appendChild(img);
+    const label = document.createElement('div');
+    label.textContent = name;
+    btn.appendChild(label);
     btn.onclick = () => choosePokemon(name);
     pokemonChoicesDiv.appendChild(btn);
   });
@@ -64,8 +83,14 @@ function choosePokemon(name) {
 }
 
 function startBattle() {
+  players.forEach(player => {
+    player.deck = generateDeck();
+  });
   currentPlayer = 0;
   defendingPlayer = 1;
+  p1Img.src = getPokemonImage(players[0].pokemonName);
+  p2Img.src = getPokemonImage(players[1].pokemonName);
+  updateDeckInfo();
   setupSection.classList.add('hidden');
   battleSection.classList.remove('hidden');
   startTurn();
@@ -86,13 +111,15 @@ function startTurn(message = '') {
   const player = players[currentPlayer];
   const opponent = players[defendingPlayer];
 
-  if (player.deck && player.deck.length === 0) {
+  if (player.deck.length === 0) {
     movesDiv.innerHTML = '';
     updateStatus(`${message}${opponent.name} wins! ${player.name} has no cards left.`);
     return;
   }
 
-  updateStatus(`${message}${player.name}'s turn.`);
+  player.deck.pop();
+  updateDeckInfo();
+  updateStatus(`${message}${player.name}'s turn. ${player.deck.length} cards left in deck.`);
   renderMoves();
 }
 
@@ -115,6 +142,11 @@ function performMove(move) {
 
 function updateStatus(text) {
   statusP.innerHTML = text;
+}
+
+function updateDeckInfo() {
+  p1DeckSpan.textContent = `Player 1 Deck: ${players[0].deck.length}`;
+  p2DeckSpan.textContent = `Player 2 Deck: ${players[1].deck.length}`;
 }
 
 showPokemonChoices();
