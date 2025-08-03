@@ -1,7 +1,8 @@
 {
   "name": "pba",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "node --test"
   }
 }
