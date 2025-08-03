@@ -250,6 +250,7 @@ export function handleKnockout(attacker, defender, message) {
   if (attacker.prizeCards.length > 0) {
     attacker.prizeCards.pop();
     attacker.prizesTaken++;
+    updateDeckInfo();
     message += `${attacker.name} takes a prize (${attacker.prizesTaken}/3). `;
     if (attacker.prizeCards.length === 0) {
       updateStatus(message + `${attacker.name} wins!`);
