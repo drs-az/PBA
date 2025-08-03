@@ -43,10 +43,27 @@ export function applyAttack(attacker, attack, defender) {
       attacker.attachedEnergy?.pop();
       break;
     case 'bench_damage':
-      if (defender.bench && defender.bench.length > 0) {
-        const target = defender.bench[0];
+      const defending = players[defendingPlayer];
+      if (defending.bench && defending.bench.length > 0) {
+        const target = defending.bench[0];
         target.hp = Math.max(target.hp - 10, 0);
         console.log(`Bench damage dealt to ${target.name}`);
+        if (target.hp === 0) {
+          defending.bench.shift();
+          const attackerPlayer = players[currentPlayer];
+          let message = `${target.name} on the bench was knocked out! `;
+          if (attackerPlayer.prizeCards.length > 0) {
+            attackerPlayer.prizeCards.pop();
+            attackerPlayer.prizesTaken++;
+            updateDeckInfo();
+            message += `${attackerPlayer.name} takes a prize (${attackerPlayer.prizesTaken}/3).`;
+            if (attackerPlayer.prizeCards.length === 0) {
+              updateStatus(message + ` ${attackerPlayer.name} wins!`);
+              break;
+            }
+          }
+          updateStatus(message);
+        }
       } else {
         console.log('Bench damage effect: defender has no benched Pokémon.');
       }
