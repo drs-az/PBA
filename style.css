@@ -62,6 +62,10 @@ button {
   margin-bottom: 1em;
 }
 
+#active {
+  margin-bottom: 1em;
+}
+
 #bench {
   margin-bottom: 1em;
 }

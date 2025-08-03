@@ -19,6 +19,7 @@ const statusP = document.getElementById('status');
 const movesDiv = document.getElementById('moves');
 const handDiv = document.getElementById('hand');
 const benchDiv = document.getElementById('bench');
+const activeDiv = document.getElementById('active');
 const p1Img = document.getElementById('p1Img');
 const p2Img = document.getElementById('p2Img');
 const p1DeckSpan = document.getElementById('p1Deck');
@@ -45,8 +46,8 @@ export function updateStatus(text) {
 export function updateDeckInfo() {
   p1DeckSpan.textContent = `Deck: ${players[0].deck.length}`;
   p2DeckSpan.textContent = `Deck: ${players[1].deck.length}`;
-  p1PrizesSpan.textContent = `Prizes: ${players[0].prizeCards.length}`;
-  p2PrizesSpan.textContent = `Prizes: ${players[1].prizeCards.length}`;
+  p1PrizesSpan.textContent = `Score: ${players[0].prizesTaken}/3`;
+  p2PrizesSpan.textContent = `Score: ${players[1].prizesTaken}/3`;
 }
 
 export function updateActiveInfo() {
@@ -61,9 +62,11 @@ export function renderHand() {
   movesDiv.innerHTML = '';
   handDiv.innerHTML = '';
   benchDiv.innerHTML = '';
+  activeDiv.innerHTML = '';
   cardInfoDiv.innerHTML = '';
   selectedCardIdx = null;
 
+  renderActive(player);
   renderBench(player);
 
   const groups = player.hand.reduce((acc, card, idx) => {
@@ -100,6 +103,23 @@ export function renderHand() {
   movesDiv.appendChild(endBtn);
 }
 
+function renderActive(player) {
+  const heading = document.createElement('h3');
+  heading.textContent = 'Active';
+  activeDiv.appendChild(heading);
+  if (player.active) {
+    const btn = document.createElement('button');
+    btn.textContent = `${player.active.name} (${player.active.hp} HP)`;
+    btn.disabled = true;
+    activeDiv.appendChild(btn);
+  } else {
+    const placeholder = document.createElement('button');
+    placeholder.textContent = '(empty)';
+    placeholder.disabled = true;
+    activeDiv.appendChild(placeholder);
+  }
+}
+
 function renderBench(player) {
   const heading = document.createElement('h3');
   heading.textContent = 'Bench';
@@ -132,6 +152,8 @@ function showCardDetails(card, idx) {
     selectedCardIdx = null;
     cardInfoDiv.innerHTML = '';
     benchDiv.innerHTML = '';
+    activeDiv.innerHTML = '';
+    renderActive(player);
     renderBench(player);
     return;
   }
@@ -146,6 +168,8 @@ function showCardDetails(card, idx) {
   }
   cardInfoDiv.innerHTML = info;
   benchDiv.innerHTML = '';
+  activeDiv.innerHTML = '';
+  renderActive(player);
   renderBench(player);
   if (card.type === 'pokemon') {
     const benchBtn = document.createElement('button');
